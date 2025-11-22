@@ -1,8 +1,5 @@
 # src/ui/__init__.py
-"""
-UI modul inicializálás – App_FL betöltése
-Monogram: FL
-"""
+
 
 import tkinter as tk
 from tkinter import ttk

@@ -1,15 +1,10 @@
-# src/core/tank.py
-
 from dataclasses import dataclass, field
 from typing import Optional
 from .properties import rho_water, cp_water
 
 @dataclass
 class Tank:
-    """
-    Tartálymodell: térfogat (liter), hőmérséklet (°C), hőveszteség (UA) és LL/HH riasztás.
-    1 liter = 1e-3 m³; energia: UA [kW/K] → kJ/s/K.
-    """
+
     capacity_l: float = 1000.0
     level_l: float = 0.0
     temperature_c: float = 25.0
@@ -23,7 +18,7 @@ class Tank:
     _t_min: float = field(default=-50.0, repr=False)
     _t_max: float = field(default=200.0, repr=False)
 
-    # --- Anyagáramok ---
+
     def add(self, q_l: float, t_in_c: Optional[float] = None) -> None:
         q_l = max(0.0, float(q_l))
         if q_l <= 0.0:
@@ -55,7 +50,7 @@ class Tank:
         self.level_l -= take
         return take
 
-    # --- Hőtani rész ---
+
     def thermal_losses(self, dt_s: float) -> None:
         if self.level_l <= self._eps or dt_s <= 0.0:
             return
@@ -93,7 +88,7 @@ class Tank:
             self.temperature_c += dQ_kJ / denom
             self._clamp_temp()
 
-    # --- Jelzések ---
+
     @property
     def level_pct(self) -> float:
         return 0.0 if self.capacity_l <= 0 else 100.0 * self.level_l / self.capacity_l
@@ -114,7 +109,7 @@ class Tank:
         self.ll_pct = float(ll_pct)
         self.hh_pct = float(hh_pct)
 
-    # --- Segédfüggvény ---
+
     def _clamp_temp(self) -> None:
         if self.temperature_c < self._t_min:
             self.temperature_c = self._t_min
