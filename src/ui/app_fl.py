@@ -13,7 +13,7 @@ class App_FL(ttk.Frame):
         super().__init__(master, padding=8)
         self.pack(fill="both", expand=True)
 
-        # FL vezérlő!
+
         self.ctrl = AppController_FL()
         self.running = False
         self.G = None
@@ -22,30 +22,30 @@ class App_FL(ttk.Frame):
         self._build()
         self.canvas.bind("<Configure>", self._on_canvas_resize)
 
-        # első rajz
+
         self._draw_static()
         self.update_display_FL()
-    # --- saját FL-függvények + események ---
+
     def fl_quick_start(self, *_):
-        """Gyors indítás demo: P1/P2 előre, T3 kis leeresztés, és start."""
+
         self.var_p1.set(1.0); self.ctrl.set_p1(1.0)
         self.var_p2.set(1.0); self.ctrl.set_p2(1.0)
         self.var_drain.set(5.0); self.ctrl.set_drain(5.0)
         self.start()
 
     def fl_emergency_stop(self, *_):
-        """Vészleállítás demo: minden pumpa 0, leeresztés 0, és stop."""
+
         self.var_p1.set(0.0); self.ctrl.set_p1(0.0)
         self.var_p2.set(0.0); self.ctrl.set_p2(0.0)
         self.var_drain.set(0.0); self.ctrl.set_drain(0.0)
         self.stop()
 
-    # -------------------- UI építés --------------------
+
     def _build(self):
         paned = ttk.PanedWindow(self, orient=tk.HORIZONTAL)
         paned.pack(fill="both", expand=True)
 
-        # ---- Bal: vezérlők
+
         left = ttk.LabelFrame(paned, text="Vezérlés", padding=8)
         paned.add(left, weight=0)
 
@@ -120,13 +120,13 @@ class App_FL(ttk.Frame):
         ttk.Label(left, text="Zöld lámpa – fut a szivattyú").grid(row=10, column=0, columnspan=2, sticky="w")
         ttk.Label(left, text="LL/HH – szintkapcsolók").grid(row=11, column=0, columnspan=2, sticky="w")
 
-        # ---- Közép: vászon
+
         mid = ttk.Frame(paned)
         paned.add(mid, weight=10)
         self.canvas = tk.Canvas(mid, bg="white", highlightthickness=0)
         self.canvas.pack(fill="both", expand=True)
 
-        # ---- Jobb: mérések + trend
+
         right = ttk.Frame(paned)
         paned.add(right, weight=5)
 
@@ -147,11 +147,11 @@ class App_FL(ttk.Frame):
         self.canvas_plot = FigureCanvasTkAgg(self.fig, master=trend)
         self.canvas_plot.get_tk_widget().pack(fill="both", expand=True)
 
-        # kényelmes sash-pozíciók
+
         self.after(0, lambda: paned.sashpos(0, 270))
         self.after(0, lambda: paned.sashpos(1, 980))
 
-    # -------------------- adaptív layout (FL) --------------------
+
     def _compute_layout_FL(self):
         c = self.canvas
         w = max(760, c.winfo_width() or 0)
@@ -170,7 +170,7 @@ class App_FL(ttk.Frame):
         return {"w": w, "h": h, "top": y_top, "bar_h": bar_h, "bar_w": bar_w,
                 "x1": x1, "x2": x2, "x3": x3, "y_top": y_top, "y_bot": y_bot, "y_mid": y_mid}
 
-    # -------------------- statikus rajz --------------------
+
     def _draw_static(self):
         c = self.canvas
         c.delete("all")
@@ -181,7 +181,7 @@ class App_FL(ttk.Frame):
         y_top, y_bot, y_mid = L["y_top"], L["y_bot"], L["y_mid"]
         bar_w = L["bar_w"]; inset = 6
 
-        # tartályok + címkék
+
         self.t1_rect = c.create_rectangle(x1 - bar_w // 2, y_top, x1 + bar_w // 2, y_bot, outline="#2b66ff", width=2)
         c.create_text(x1, y_top - 24, text="T1", font=("TkDefaultFont", 12, "bold"))
         c.create_text(x1 - 36, y_top - 44, text="LL"); c.create_text(x1 + 36, y_top - 44, text="HH")
@@ -194,12 +194,12 @@ class App_FL(ttk.Frame):
         c.create_text(x3, y_top - 24, text="T3", font=("TkDefaultFont", 12, "bold"))
         c.create_text(x3 - 36, y_top - 44, text="LL"); c.create_text(x3 + 36, y_top - 44, text="HH")
 
-        # szintkitöltések
+
         self.t1_fill = c.create_rectangle(x1 - bar_w // 2 + inset, y_bot, x1 + bar_w // 2 - inset, y_bot, fill="#2b66ff", outline="")
         self.t2_fill = c.create_rectangle(x2 - bar_w // 2 + inset, y_bot, x2 + bar_w // 2 - inset, y_bot, fill="#ffba4d", outline="")
         self.t3_fill = c.create_rectangle(x3 - bar_w // 2 + inset, y_bot, x3 + bar_w // 2 - inset, y_bot, fill="#54d18b", outline="")
 
-        # LL/HH lámpák
+
         self.t1_ll = c.create_oval(x1 - 48, y_top - 36, x1 - 32, y_top - 20, fill="grey", outline="")
         self.t1_hh = c.create_oval(x1 + 32, y_top - 36, x1 + 48, y_top - 20, fill="grey", outline="")
         self.t2_ll = c.create_oval(x2 - 48, y_top - 36, x2 - 32, y_top - 20, fill="grey", outline="")
@@ -207,7 +207,7 @@ class App_FL(ttk.Frame):
         self.t3_ll = c.create_oval(x3 - 48, y_top - 36, x3 - 32, y_top - 20, fill="grey", outline="")
         self.t3_hh = c.create_oval(x3 + 32, y_top - 36, x3 + 48, y_top - 20, fill="grey", outline="")
 
-        # csövek + pumpák
+
         self.p1_pipe = c.create_line(x1 + bar_w // 2, y_mid, x2 - bar_w // 2, y_mid, width=3, arrow="last", fill="black")
         self.p1_body = c.create_rectangle(x1 + bar_w // 2 + 22, y_mid - 14, x1 + bar_w // 2 + 62, y_mid + 14, fill="#d8d8d8", outline="#666")
         self.p1_text = c.create_text(x1 + bar_w // 2 + 42, y_mid, text="P1", font=("TkDefaultFont", 10, "bold"))
@@ -218,13 +218,13 @@ class App_FL(ttk.Frame):
         self.p2_text = c.create_text(x2 + bar_w // 2 + 42, y_mid, text="P2", font=("TkDefaultFont", 10, "bold"))
         self.p2_lamp = c.create_oval(x2 + bar_w // 2 + 70, y_mid - 8, x2 + bar_w // 2 + 86, y_mid + 8, fill="grey", outline="")
 
-        # irány feliratok
+
         self.lbl_p1_dir = c.create_text((x1 + x2) / 2, y_mid - 26, text="T1 → T2 (P1)", font=("TkDefaultFont", 9))
         self.lbl_p2_dir = c.create_text((x2 + x3) / 2, y_mid - 26, text="T2 → T3 (P2)", font=("TkDefaultFont", 9))
 
-    # -------------------- dinamikus frissítés (FL wrapper) --------------------
+
     def update_display_FL(self):
-        """Saját FL függvény – a dinamikus réteg frissítése."""
+
         self._draw_dynamic()
 
     def _draw_dynamic(self):
@@ -236,7 +236,7 @@ class App_FL(ttk.Frame):
         y_top, y_bot, y_mid = L["y_top"], L["y_bot"], L["y_mid"]
         bar_w = L["bar_w"]; inset = 6
 
-        # szintek
+
         l1, l2, l3 = self.ctrl.get_levels()
 
         def set_fill(rect, xc, level_l):
@@ -247,13 +247,13 @@ class App_FL(ttk.Frame):
         set_fill(self.t2_fill, x2, l2)
         set_fill(self.t3_fill, x3, l3)
 
-        # LL/HH lámpák
+
         ll1, hh1, ll2, hh2, ll3, hh3 = self.ctrl.get_alarms()
         c.itemconfig(self.t1_ll, fill=("red" if ll1 else "grey")); c.itemconfig(self.t1_hh, fill=("red" if hh1 else "grey"))
         c.itemconfig(self.t2_ll, fill=("red" if ll2 else "grey")); c.itemconfig(self.t2_hh, fill=("red" if hh2 else "grey"))
         c.itemconfig(self.t3_ll, fill=("red" if ll3 else "grey")); c.itemconfig(self.t3_hh, fill=("red" if hh3 else "grey"))
 
-        # pumpa visszajelzés + csővastagság
+
         run1, run2, h1h, h2h = self.ctrl.get_pumps()
         c.itemconfig(self.p1_lamp, fill=("lime green" if run1 else "grey"))
         c.itemconfig(self.p2_lamp, fill=("lime green" if run2 else "grey"))
@@ -265,14 +265,14 @@ class App_FL(ttk.Frame):
         c.coords(self.p2_pipe, x2 + bar_w // 2, y_mid, x3 - bar_w // 2, y_mid)
         c.itemconfig(self.p1_pipe, width=w1); c.itemconfig(self.p2_pipe, width=w2)
 
-        # nyílirány
+
         cmd1, cmd2 = self.ctrl.get_pump_cmds()
         c.itemconfig(self.p1_pipe, arrow=("last" if cmd1 >= 0 else "first"))
         c.itemconfig(self.p2_pipe, arrow=("last" if cmd2 >= 0 else "first"))
         c.itemconfig(self.lbl_p1_dir, text=("T1 → T2 (P1)" if cmd1 >= 0 else "T2 → T1 (P1)"))
         c.itemconfig(self.lbl_p2_dir, text=("T2 → T3 (P2)" if cmd2 >= 0 else "T3 → T2 (P2)"))
 
-        # állapot szövegek
+
         tot12, tot23 = self.ctrl.get_totals()
         T1, T2, T3 = self.ctrl.get_temps()
         R1, R2, R3 = self.ctrl.get_rhos()
@@ -283,7 +283,7 @@ class App_FL(ttk.Frame):
         self.lbl_totals.config(text=f"Mennyiségek összesen [L]  FQ12:{tot12:.0f}  FQ23:{tot23:.0f}")
         self.lbl_pumps.config(text=f"Szivattyúk – P1 üzemóra: {h1h:.2f} h | P2 üzemóra: {h2h:.2f} h")
 
-        # trend
+
         hist = self.ctrl.history()
         if hist:
             ts  = [h[0] for h in hist]
@@ -296,7 +296,7 @@ class App_FL(ttk.Frame):
             self.ax2.set_ylabel("T [°C]"); self.ax2.set_xlabel("Idő [s]"); self.ax2.legend(loc="upper right")
             self.canvas_plot.draw()
 
-    # -------------------- futásvezérlés --------------------
+
     def start(self):
         if self.running:
             return
@@ -312,11 +312,11 @@ class App_FL(ttk.Frame):
     def _tick(self):
         if not self.running:
             return
-        self.ctrl.tick_FL(1.0)     # FL nevű függvény hívása
-        self.update_display_FL()   # FL nevű wrapper hívása
+        self.ctrl.tick_FL(1.0)
+        self.update_display_FL()
         self.after(1000, self._tick)
 
-    # -------------------- resize-kezelés --------------------
+
     def _on_canvas_resize(self, _event):
         if self._resize_after:
             self.after_cancel(self._resize_after)

@@ -4,7 +4,7 @@ from .tank import Tank
 from .pump import Pump
 from .flowmeter import FlowMeter
 
-CAP_L = 1000.0  # 1000 L kapacitás/tartály
+CAP_L = 1000.0
 
 class Simulator_FL:
     def __init__(self):
@@ -12,8 +12,8 @@ class Simulator_FL:
         self.t2 = Tank(1000, 250, 35.0)
         self.t3 = Tank(1000, 100, 25.0)
 
-        self.p1 = Pump(35, "P1")   # T1 ↔ T2
-        self.p2 = Pump(35, "P2")   # T2 ↔ T3
+        self.p1 = Pump(35, "P1")
+        self.p2 = Pump(35, "P2")
 
         self.fq12 = FlowMeter("FQ12")
         self.fq23 = FlowMeter("FQ23")
@@ -30,8 +30,8 @@ class Simulator_FL:
         if abs(q_cmd_lps) <= 1e-12:
             return 0.0
 
-        # Forrás–cél védelem (LL/HH) – clamp a parancsra
-        if q_cmd_lps > 0:  # src -> dst
+
+        if q_cmd_lps > 0:
             if src.level_l <= 0 or dst.level_l >= CAP_L:
                 return 0.0
             max_out = src.level_l / max(1.0, dt_s)
@@ -40,7 +40,7 @@ class Simulator_FL:
             moved = src.remove(q_lps * dt_s)
             dst.add(moved, src.temperature_c)
             return q_lps
-        else:              # dst -> src
+        else:
             if dst.level_l <= 0 or src.level_l >= CAP_L:
                 return 0.0
             q_cmd_lps = -q_cmd_lps
@@ -53,7 +53,7 @@ class Simulator_FL:
 
     #
     def step_FL(self, dt_s: float = 1.0):
-        # P1 interlock (irányfüggő): ne töltsön tele/üresre
+
         q1_cmd = self.p1.signed_flow_lps()
         if q1_cmd > 0 and (self.t1.level_l <= 0 or self.t2.level_l >= CAP_L):
             self.p1.command = 0.0; q1_cmd = 0.0
@@ -66,7 +66,7 @@ class Simulator_FL:
         self.fq12.measure(abs(q12), rho_src12, dt_s)
         self.p1.tick_hours(dt_s)
 
-        # P2 interlock
+
         q2_cmd = self.p2.signed_flow_lps()
         if q2_cmd > 0 and (self.t2.level_l <= 0 or self.t3.level_l >= CAP_L):
             self.p2.command = 0.0; q2_cmd = 0.0
@@ -79,7 +79,7 @@ class Simulator_FL:
         self.fq23.measure(abs(q23), rho_src23, dt_s)
         self.p2.tick_hours(dt_s)
 
-        # Leeresztés T3-ból (clamp: ne menjen 0 alá)
+
         drain = min(self.drain_lps * dt_s, self.t3.level_l)
         self.t3.remove(drain)
 

@@ -2,10 +2,7 @@
 from collections import deque
 
 class AppController_FL:
-    """
-    3 tartály (T1–T3), 2 szivattyú (P1, P2), T3 leeresztés.
-    Parancsok [-1..1], áramlás L/s. FL-változat interlockokkal (LL/HH + hiszterézis).
-    """
+
     CAP_L = 1000.0
     P1_MAX_LPS = 20.0
     P2_MAX_LPS = 20.0
@@ -30,7 +27,7 @@ class AppController_FL:
         self.time_s = 0.0
         self._hist = deque(maxlen=self.HIST_MAX)
 
-    # ---- GUI API
+
     def set_p1(self, cmd: float): self.p1_cmd = max(-1.0, min(1.0, float(cmd)))
     def set_p2(self, cmd: float): self.p2_cmd = max(-1.0, min(1.0, float(cmd)))
     def set_drain(self, q_lps: float): self.drain_lps = max(0.0, float(q_lps))
@@ -53,8 +50,8 @@ class AppController_FL:
         return eff1, eff2
     def history(self): return list(self._hist)
 
-    # ---- Szimuláció
-    def tick_FL(self, dt: float):  # <- saját FL nevű függvény (követelmény)
+
+    def tick_FL(self, dt: float):
         dt = float(dt)
         if dt <= 0: return
         p1 = self._apply_interlocks_p1(self.p1_cmd)
@@ -87,10 +84,10 @@ class AppController_FL:
         self.time_s += dt
         self._hist.append((self.time_s, self.L1, self.L2, self.L3, self.f12_lps, self.f23_lps, self.T1, self.T2, self.T3))
 
-    # kompatibilitás
+
     def tick(self, dt: float): self.tick_FL(dt)
 
-    # ---- belső segédek
+
     @staticmethod
     def _rho(T): return max(950.0, min(1000.0, 1000.0 - 0.3*(T-4.0)))
     def _apply_interlocks_p1(self, cmd):
