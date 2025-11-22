@@ -20,7 +20,7 @@ class FlowMeter:
         self.min_lps = float("+inf")
         self.max_lps = float("-inf")
 
-    # --- Fő API ---
+
 
     def measure(self, lps: float, rho_kgm3: float, dt_s: float):
 
