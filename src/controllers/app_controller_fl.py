@@ -1,4 +1,3 @@
-# controllers/app_controller_fl.py
 from collections import deque
 
 class AppController_FL:

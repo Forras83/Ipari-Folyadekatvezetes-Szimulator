@@ -68,4 +68,4 @@ A szimulátor képes:
 ## Indítás
 A projekt fő belépési pontja:
 ```bash
-python src/main_fl.py
+main_fl.py

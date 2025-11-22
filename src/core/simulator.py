@@ -1,5 +1,3 @@
-# src/core/simulator_fl.py
-
 from .tank import Tank
 from .pump import Pump
 from .flowmeter import FlowMeter
@@ -25,7 +23,7 @@ class Simulator_FL:
         self.last_q12_lps = 0.0
         self.last_q23_lps = 0.0
 
-    #
+
     def _transfer_FL(self, src: Tank, dst: Tank, q_cmd_lps: float, dt_s: float) -> float:
         if abs(q_cmd_lps) <= 1e-12:
             return 0.0
@@ -51,7 +49,7 @@ class Simulator_FL:
             src.add(moved, dst.temperature_c)
             return -q_lps
 
-    #
+
     def step_FL(self, dt_s: float = 1.0):
 
         q1_cmd = self.p1.signed_flow_lps()
